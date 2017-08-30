@@ -4,10 +4,8 @@ html, body, #map {
     padding: 0px
 }
 
-#form {
+#container-form {
   position: absolute;
-  top: 30px;
-  left: 100px;
 }
 
 /* Override */

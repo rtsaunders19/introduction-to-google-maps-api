@@ -19,12 +19,19 @@ var infoWindow = new google.maps.InfoWindow();
 //Function run on DOM load
 
 //hide form
-var $form = document.getElementById("form");
-$form.style.visibility = "hidden";
+function hideForm() {
+  var $form = document.getElementById("container-form");
+  $form.style.visibility = "hidden";
+  $form.style.top = "0";
+  $form.style.left = "27.5%";
+}
+
+
+
 
 
 // add listeners to buttons
-document.getElementById("need-help").addEventListener("click", rescuee)
+document.getElementById("need-help").addEventListener("click", goToForm)
 document.getElementById("rescuing").addEventListener("click", rescuer)
 
 
@@ -54,6 +61,13 @@ function displayMap() {
   map = new google.maps.Map(mapId,mapOptions);
 }
 
+
+function goToForm() {
+  var $form = document.getElementById("container-form");
+  var $landing = document.getElementById("landing");
+  $landing.style.visibility = "hidden";
+  $form.style.visibility = "visible";
+}
 
 
 function rescuee() {
@@ -202,4 +216,4 @@ function numberWithCommas(x) {
 }
 
 //Load the map
-//google.maps.event.addDomListener(window, 'load', loadMap());
+google.maps.event.addDomListener(window, 'load', hideForm());
