@@ -23,7 +23,7 @@ function hideForm() {
   var $form = document.getElementById("container-form");
   $form.style.visibility = "hidden";
   $form.style.top = "0";
-  $form.style.left = "27.5%";
+  $form.style.left = "19%";
 }
 
 
