@@ -49,6 +49,7 @@ reviewForm.addEventListener('submit', (e) => {
   var phoneNumber = document.getElementById('PhoneNumber');
   var numberOfPeople = document.getElementById('NumberOfPeople');
   var address = document.getElementById('Address');
+  var details = document.getElementById('Details');
 
   //rescuee();
   var id = 'locations/' + Date.now()
@@ -58,6 +59,7 @@ reviewForm.addEventListener('submit', (e) => {
     phoneNumber: phoneNumber.value,
     numberOfPeople: numberOfPeople.value,
     address: address.value,
+    details: details.value,
     lat: 0,
     lng: 0
   });
@@ -121,7 +123,7 @@ function rescuee(id) {
             };
 
             infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
+            infoWindow.setContent('Location Registered');
             infoWindow.open(map);
             map.setCenter(pos);
             //adding your marker
@@ -162,7 +164,14 @@ locationsRef.on('value', function(snapshot) {
   snapshot.forEach(function(a) {
     var latitude = a.val().lat
     var longitude = a.val().lng
-    addMarker(latitude, longitude);
+    var name = a.val().name
+    var phoneNumber = a.val().phoneNumber
+    var numberOfPeople = a.val().numberOfPeople
+    var address = a.val().address
+    var details = a.val().details
+    newMarker = addMarker(latitude, longitude);
+    newMarker.locationData = a;
+    addInfoWindow(newMarker, latitude, longitude, name, phoneNumber, numberOfPeople, address, details);
  })
 })
 }
@@ -213,24 +222,24 @@ var marker = new google.maps.Marker({
 // {width: 16, height: 16, f: "px", b: "px"}
 
 //Associate an infowindow with the marker
-function addInfoWindow(marker) {
+function addInfoWindow(marker, lat, lng, name, phoneNumber, numberOfPeople, address, details) {
 
-    var details = marker.airport;
+
 
     //Content string
     var contentString = '<div class="infowindowcontent">'+
         '<div class="row">' +
-        '<p class="total '+details.icon+'bk">'+Math.round(details.totalper*10)/10+'%</p>'+
-        '<p class="location">'+details.airport.split("(")[0].substring(0,19)+'</p>'+
-        '<p class="code">'+details.code+'</p>'+
+        '<p class="location">'+name+'</p>'+
+        '<p class="code">Phone #: '+phoneNumber+'</p>'+
+        '<p class="code">People: '+numberOfPeople+'</p>'+
+        '<p class="code">Address: <span>'+address+'</span></p>'+
+        '<p class="code">Details: <span>'+details+'</span></p>'+
         '</div>'+
         '<div class="data">'+
-        '<p class="tagbelow">Avg On-Time</p>'+
+        '<p class="tagbelow"></p>'+
         '<p class="label">Arrivals</p>'+
-        '<p class="details">'+details.aper+'% ('+numberWithCommas(details.aop)+')</p>' +
         '<p class="label">Departures</p>'+
-        '<p class="details">'+details.dper+'% ('+numberWithCommas(details.dop)+')</p>' +
-        '<p class="coords">'+details.lat+' , '+details.lng+'</p>' +
+        '<p class="coords">'+lat+' , '+lng+'</p>' +
         '</div>'+
         '</div>';
 

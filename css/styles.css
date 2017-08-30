@@ -58,16 +58,20 @@ html, body, #map {
 }
 
 .row .location {
-    margin: 0px;
+    margin-left: 20px;
     padding: 10px 0px 10px 0px;
     color: #333;
-    font-size: 16px;
+    font-size: 26px;
 }
 
 .row .code {
-    margin: 0px;
-    padding: 3px 0px 0px 10px;
-    font-size: 26px;
+    margin-left: 20px;
+    padding: 3px 0px 0px 0px;
+    font-size: 22px;
+}
+
+.row .code span {
+  font-size: 12px;
 }
 
 .data {
