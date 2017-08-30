@@ -35,6 +35,43 @@ document.getElementById("need-help").addEventListener("click", goToForm)
 document.getElementById("rescuing").addEventListener("click", rescuer)
 
 
+//for entry
+
+
+
+var reviewForm = document.getElementById('reviewForm');
+
+
+reviewForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  var name = document.getElementById('Name');
+  var phoneNumber = document.getElementById('PhoneNumber');
+  var numberOfPeople = document.getElementById('NumberOfPeople');
+  var address = document.getElementById('Address');
+
+  //rescuee();
+  var id = 'locations/' + Date.now()
+
+  db.ref(id).set({
+    name: name.value,
+    phoneNumber: phoneNumber.value,
+    numberOfPeople: numberOfPeople.value,
+    address: address.value,
+    lat: 0,
+    lng: 0
+  });
+
+  rescuee(id);
+
+})
+
+
+
+
+
+
+
 function displayMap() {
   //remove buttons
   var parent = document.getElementById("container");
@@ -70,7 +107,9 @@ function goToForm() {
 }
 
 
-function rescuee() {
+function rescuee(id) {
+    var $form = document.getElementById("container-form");
+    $form.style.visibility = "hidden";
 
     displayMap();
 
@@ -86,7 +125,7 @@ function rescuee() {
             infoWindow.open(map);
             map.setCenter(pos);
             //adding your marker
-            addMarkerToDatabase(pos);
+            addMarkerToDatabase(pos, id);
           }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
           });
@@ -102,6 +141,16 @@ function rescuee() {
                                 'Error: Your browser doesn\'t support geolocation.');
           infoWindow.open(map);
       }
+}
+
+
+function addMarkerToDatabase(pos, id) {
+
+
+    db.ref(id).update({
+      lat: pos.lat,
+      lng: pos.lng
+    });
 }
 
 
@@ -159,15 +208,7 @@ var marker = new google.maps.Marker({
 
 
 
-//Add a marker to the map
-function addMarkerToDatabase(pos) {
-    var id = Date.now()
 
-    db.ref('locations/' + id).set({
-      lat: pos.lat,
-      lng: pos.lng
-    });
-}
 
 // {width: 16, height: 16, f: "px", b: "px"}
 
