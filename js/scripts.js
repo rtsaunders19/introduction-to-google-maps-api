@@ -1,3 +1,15 @@
+// Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB8db6Euu-ptfoyColPQn2VFUYzE7KGR20",
+    authDomain: "ocations-44191.firebaseapp.com",
+    databaseURL: "https://ocations-44191.firebaseio.com",
+    projectId: "ocations-44191",
+    storageBucket: "",
+    messagingSenderId: "661022780335"
+  };
+  firebase.initializeApp(config);
+  var db = firebase.database();
+
 //Global map variable
 var map;
 
@@ -5,27 +17,48 @@ var map;
 var infoWindow = new google.maps.InfoWindow();
 
 //Function run on DOM load
-function loadMap() {
 
-    //Set the map options
-    var mapOptions = {
+//hide form
+var $form = document.getElementById("form");
+$form.style.visibility = "hidden";
 
-        //Zoom on load
-        zoom: 9,
 
-        //Map center
-        center: new google.maps.LatLng(29.65,-95.3),
+// add listeners to buttons
+document.getElementById("need-help").addEventListener("click", rescuee)
+document.getElementById("rescuing").addEventListener("click", rescuer)
 
-        //Set the map style
-        styles: shiftWorkerMapStyle
-    };
 
-    //Get the id of the map container div
-    var mapId = document.getElementById('map');
+function displayMap() {
+  //remove buttons
+  var parent = document.getElementById("container");
+  var child = document.getElementById("landing");
+  parent.removeChild(child);
 
-    //Create the map
-    map = new google.maps.Map(mapId,mapOptions);
+  //Set the map options
+  var mapOptions = {
 
+      //Zoom on load
+      zoom: 9,
+
+      //Map center
+      center: new google.maps.LatLng(29.65,-95.3),
+
+      //Set the map style
+      styles: shiftWorkerMapStyle
+  };
+
+  //Get the id of the map container div
+  var mapId = document.getElementById('map');
+
+  //Create the map
+  map = new google.maps.Map(mapId,mapOptions);
+}
+
+
+
+function rescuee() {
+
+    displayMap();
 
     if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
@@ -38,6 +71,8 @@ function loadMap() {
             infoWindow.setContent('Location found.');
             infoWindow.open(map);
             map.setCenter(pos);
+            //adding your marker
+            addMarkerToDatabase(pos);
           }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
           });
@@ -46,76 +81,37 @@ function loadMap() {
           handleLocationError(false, infoWindow, map.getCenter());
         }
 
-
-
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
           infoWindow.setPosition(pos);
           infoWindow.setContent(browserHasGeolocation ?
                                 'Error: The Geolocation service failed.' :
                                 'Error: Your browser doesn\'t support geolocation.');
           infoWindow.open(map);
-        }
-
-
-
-/*
-    //Loop through the airport data
-    for (var i=0;i<airportData.length;i++) {
-
-        var airport = airportData[i];
-
-        //Avg percentage
-        airport.totalper = (airport.aper + airport.dper)/2;
-
-        //Total flights
-        airport.totalflights = (airport.aop + airport.dop);
-
-        //Scale
-        if(airport.totalflights > 10000) {
-            airport.iconsize = new google.maps.Size(48,48);
-        }
-        else if((1000 <= airport.totalflights) && (airport.totalflights <= 10000)) {
-            airport.iconsize = new google.maps.Size(32,32);
-        }
-        else if(airport.totalflights < 1000) {
-            airport.iconsize = new google.maps.Size(16,16);
-        }
-
-        //Set the icon
-        if(airport.totalper >= 80) {
-            airport.icon = 'green';
-        }
-        else if((70 <= airport.totalper) && (airport.totalper < 80)) {
-            airport.icon = 'yellow';
-        }
-        else if((60 <= airport.totalper) && (airport.totalper < 70)) {
-            airport.icon = 'orange';
-        }
-        else {
-            airport.icon = 'red';
-        }
-
-        //Add the marker to the map
-        newMarker = addMarker(airport);
-
-        //Append the data to the marker
-        newMarker.airport = airport;
-
-        //Adds the infowindow
-        addInfoWindow(newMarker);
-
-    }
-*/
+      }
 }
 
-//Add a marker to the map
-function addMarker(airport) {
 
-    //Create the marker (#MarkerOptions)
-    var marker = new google.maps.Marker({
+function rescuer() {
+//Loop through the airport data
+displayMap();
+var locationsRef = db.ref('locations');
+locationsRef.on('value', function(snapshot) {
+  snapshot.forEach(function(a) {
+    var latitude = a.val().lat
+    var longitude = a.val().lng
+    addMarker(latitude, longitude);
+ })
+})
+}
+
+
+function addMarker(lat,lng) {
+
+
+var marker = new google.maps.Marker({
 
         //Position of marker
-        position: new google.maps.LatLng(airport.lat,airport.lng),
+        position: new google.maps.LatLng(lat,lng),
 
         //Map
         map: map,
@@ -124,10 +120,10 @@ function addMarker(airport) {
         icon: {
 
             //URL of the image
-            url: 'img/airplane-'+airport.icon+'.png',
+            url: 'http://www.clker.com/cliparts/e/3/F/I/0/A/google-maps-marker-for-residencelamontagne-hi.png',
 
             //Sets the image size
-            size: airport.iconsize,
+            size: {width: 16, height: 16, f: "px", b: "px"},
 
             //Sets the origin of the image (top left)
             origin: new google.maps.Point(0,0),
@@ -136,17 +132,30 @@ function addMarker(airport) {
             anchor: new google.maps.Point(16,32),
 
             //Scales the image
-            scaledSize: airport.iconsize
+            scaledSize: {width: 16, height: 16, f: "px", b: "px"}
         },
 
         //Sets the title when mouse hovers
-        title: airport.airport
+        title: 'location'
 
     });
-
     return marker;
+ }
+
+
+
+
+//Add a marker to the map
+function addMarkerToDatabase(pos) {
+    var id = Date.now()
+
+    db.ref('locations/' + id).set({
+      lat: pos.lat,
+      lng: pos.lng
+    });
 }
 
+// {width: 16, height: 16, f: "px", b: "px"}
 
 //Associate an infowindow with the marker
 function addInfoWindow(marker) {
@@ -193,4 +202,4 @@ function numberWithCommas(x) {
 }
 
 //Load the map
-google.maps.event.addDomListener(window, 'load', loadMap());
+//google.maps.event.addDomListener(window, 'load', loadMap());
