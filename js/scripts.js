@@ -265,5 +265,11 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+
+
+
+
+
+
 //Load the map
 google.maps.event.addDomListener(window, 'load', hideForm());
