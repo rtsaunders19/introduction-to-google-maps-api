@@ -104,6 +104,8 @@ function displayMap() {
 function goToForm() {
   var $form = document.getElementById("container-form");
   var $landing = document.getElementById("landing");
+  var $rescueBack = document.getElementById("actuallyRescuer");
+  $rescueBack.style.visibility = "visible";
   $landing.style.visibility = "hidden";
   $form.style.visibility = "visible";
 }
